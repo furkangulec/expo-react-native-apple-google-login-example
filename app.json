@@ -20,7 +20,7 @@
       "config": {
         "usesAppleSignIn": true,
         "googleSignIn": {
-          "reservedClientId": "GOOGLE_RESERVED_CLIENT_ID"
+          "reservedClientId": "com.googleusercontent.apps.218999374494-uukisnfh3eal4p45kj1ak29cdda3divl"
         }
       }
     },
@@ -36,8 +36,18 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-google-signin/google-signin"
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.218999374494-uukisnfh3eal4p45kj1ak29cdda3divl"
+        }
+      ]
     ],
-    "scheme": "com.habitzpro.habittracker"
+    "scheme": "com.habitzpro.habittracker",
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
   }
 }

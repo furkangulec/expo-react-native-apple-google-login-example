@@ -30,7 +30,10 @@ npm install
 
 4. Google Cloud Console'dan gerekli yapılandırmayı yapın:
    - Yeni bir proje oluşturun
-   - OAuth 2.0 client ID'leri oluşturun (iOS, Android ve Web için)
+   - OAuth 2.0 client ID'leri oluşturun:
+     - iOS için: Bundle ID'nizi authorized bundle ID olarak ekleyin
+     - Android için: Package name ve SHA-1 sertifika parmak izini ekleyin
+     - Web için: Authorized redirect URI'leri ekleyin
    - `google-services.json` dosyasını indirip proje ana dizinine yerleştirin
 
 5. `App.js` dosyasında backend URL'lerini düzenleyin:
@@ -78,6 +81,12 @@ Backend servisiniz aşağıdaki formatta bir POST isteği almalıdır:
   }
 }
 ```
+
+## Google Sign In Notları
+- Native Google Sign In SDK'sı kullanıldığı için özel bir callback URL tanımlamaya gerek yoktur
+- Google Cloud Console'da bundle ID ve package name'in doğru yapılandırıldığından emin olun
+- Android için SHA-1 sertifika parmak izi gereklidir
+- Web client ID, iOS client ID ve Android yapılandırması birbirinden farklıdır
 
 ## Güvenlik Notları
 - `.env` dosyası ve `google-services.json` dosyası git reposuna eklenmemelidir

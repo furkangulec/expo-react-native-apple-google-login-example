@@ -107,9 +107,29 @@ export default function App() {
       setCurrentButton('google');
       
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
+      await GoogleSignin.signIn();
+      const tokens = await GoogleSignin.getTokens();
       
-      const validationResult = await validateWithBackend(userInfo, 'google');
+      // Detaylı Google Sign In logları
+      console.log('\n=== GOOGLE SIGN IN DETAILS ===');
+      console.log('ID Token:', tokens.idToken);
+      console.log('Access Token:', tokens.accessToken);
+      
+      const currentUser = await GoogleSignin.getCurrentUser();
+      console.log('User Info:', {
+        email: currentUser?.email,
+        name: currentUser?.name,
+        familyName: currentUser?.familyName,
+        givenName: currentUser?.givenName,
+        id: currentUser?.id,
+        photo: currentUser?.photo
+      });
+      console.log('\n========================');
+      
+      const validationResult = await validateWithBackend({
+        idToken: tokens.idToken,
+        user: currentUser
+      }, 'google');
       console.log('Validation result:', validationResult);
 
     } catch (error) {
