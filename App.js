@@ -1,36 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GOOGLE_WEB_CLIENT_ID, GOOGLE_IOS_CLIENT_ID } from '@env';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
+  const [currentButton, setCurrentButton] = useState(null);
 
-  const validateWithBackend = async (appleCredential) => {
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: GOOGLE_WEB_CLIENT_ID,
+      iosClientId: GOOGLE_IOS_CLIENT_ID,
+      // Android için client ID'yi google-services.json dosyasından otomatik alır
+    });
+  }, []);
+
+  const validateWithBackend = async (credential, type) => {
     try {
-      const payload = {
-        identityToken: appleCredential.identityToken,
-        authorizationCode: appleCredential.authorizationCode,
-      };
+      let payload;
+      let endpoint;
 
-      // Eğer isim bilgisi varsa ekle
-      if (appleCredential.fullName?.familyName || appleCredential.fullName?.givenName) {
-        payload.appleName = `${appleCredential.fullName?.givenName || ''} ${appleCredential.fullName?.familyName || ''}`.trim();
+      if (type === 'apple') {
+        payload = {
+          identityToken: credential.identityToken,
+          authorizationCode: credential.authorizationCode,
+        };
+        
+        if (credential.fullName?.familyName || credential.fullName?.givenName) {
+          payload.appleName = `${credential.fullName?.givenName || ''} ${credential.fullName?.familyName || ''}`.trim();
+        }
+        
+        endpoint = 'http://localhost:5040/Nexus/Api/User/AppleTokenValidate';
+      } else if (type === 'google') {
+        payload = {
+          idToken: credential.idToken,
+          user: {
+            email: credential.user.email,
+            name: credential.user.name,
+          }
+        };
+        
+        endpoint = 'YOUR_GOOGLE_VALIDATION_ENDPOINT'; // Backend'deki Google doğrulama endpoint'i
       }
 
       // Detaylı log
-      console.log('\n=== APPLE SIGN IN DATA ===');
-      console.log('Identity Token:', appleCredential.identityToken);
-      console.log('Authorization Code:', appleCredential.authorizationCode);
-      console.log('Full Name:', appleCredential.fullName);
-      console.log('Email:', appleCredential.email);
+      console.log(`\n=== ${type.toUpperCase()} SIGN IN DATA ===`);
+      console.log('Credential:', credential);
       console.log('\n=== REQUEST PAYLOAD ===');
       console.log(JSON.stringify(payload, null, 2));
       console.log('\n========================');
 
       try {
-        const response = await fetch('http://localhost:5040/Nexus/Api/User/AppleTokenValidate', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,6 +78,7 @@ export default function App() {
   const handleAppleSignIn = async () => {
     try {
       setLoading(true);
+      setCurrentButton('apple');
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -61,11 +86,7 @@ export default function App() {
         ]
       });
       
-      // Handle successful sign in
-      console.log('Apple Sign In success:', credential);
-      
-      // Validate with backend
-      const validationResult = await validateWithBackend(credential);
+      const validationResult = await validateWithBackend(credential, 'apple');
       console.log('Validation result:', validationResult);
 
     } catch (error) {
@@ -76,6 +97,30 @@ export default function App() {
       }
     } finally {
       setLoading(false);
+      setCurrentButton(null);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      setCurrentButton('google');
+      
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      
+      const validationResult = await validateWithBackend(userInfo, 'google');
+      console.log('Validation result:', validationResult);
+
+    } catch (error) {
+      if (error.code === 'SIGN_IN_CANCELLED') {
+        console.log('User canceled Google Sign In');
+      } else {
+        console.log('Google Sign In error:', error);
+      }
+    } finally {
+      setLoading(false);
+      setCurrentButton(null);
     }
   };
 
@@ -89,12 +134,25 @@ export default function App() {
           onPress={handleAppleSignIn}
           disabled={loading}
         >
-          {loading ? (
+          {loading && currentButton === 'apple' ? (
             <ActivityIndicator color="white" style={styles.buttonIcon} />
           ) : (
             <AntDesign name="apple1" size={24} color="white" style={styles.buttonIcon} />
           )}
           <Text style={styles.buttonText}>Apple ile Giriş Yap</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.googleButton}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
+        >
+          {loading && currentButton === 'google' ? (
+            <ActivityIndicator color="white" style={styles.buttonIcon} />
+          ) : (
+            <AntDesign name="google" size={24} color="white" style={styles.buttonIcon} />
+          )}
+          <Text style={styles.buttonText}>Google ile Giriş Yap</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -119,6 +177,16 @@ const styles = StyleSheet.create({
   },
   appleButton: {
     backgroundColor: '#000',
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 10,
+  },
+  googleButton: {
+    backgroundColor: '#4285F4',
     padding: 15,
     borderRadius: 10,
     flexDirection: 'row',

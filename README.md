@@ -16,21 +16,34 @@ Bu proje, Expo React Native kullanarak Apple Sign In ve Google Sign In özellikl
 npm install
 ```
 
-2. `app.json` dosyasını düzenleyin:
+2. `.env` dosyasını oluşturun:
+   - `.env.example` dosyasını `.env` olarak kopyalayın
+   - Google Cloud Console'dan aldığınız client ID'leri `.env` dosyasına ekleyin:
+     ```
+     GOOGLE_WEB_CLIENT_ID=your_web_client_id_here
+     GOOGLE_IOS_CLIENT_ID=your_ios_client_id_here
+     ```
+
+3. `app.json` dosyasını düzenleyin:
    - iOS için `bundleIdentifier`
    - Android için `package` değerlerini kendi uygulamanızın kimliği ile değiştirin
 
-3. `App.js` dosyasında backend URL'sini düzenleyin:
+4. Google Cloud Console'dan gerekli yapılandırmayı yapın:
+   - Yeni bir proje oluşturun
+   - OAuth 2.0 client ID'leri oluşturun (iOS, Android ve Web için)
+   - `google-services.json` dosyasını indirip proje ana dizinine yerleştirin
+
+5. `App.js` dosyasında backend URL'lerini düzenleyin:
    - Apple Sign In için: `http://localhost:5040/Nexus/Api/User/AppleTokenValidate`
-   - Google Sign In için: `[GOOGLE_TOKEN_VALIDATE_ENDPOINT]`
+   - Google Sign In için: `YOUR_GOOGLE_VALIDATION_ENDPOINT`
    adreslerini kendi backend servisinizin adresleri ile değiştirin
 
-4. Development build oluşturun:
+6. Development build oluşturun:
 ```bash
 npx expo prebuild
 ```
 
-5. Uygulamayı çalıştırın:
+7. Uygulamayı çalıştırın:
    - iOS için:
    ```bash
    npx expo run:ios
@@ -54,7 +67,22 @@ Backend servisiniz aşağıdaki formatta bir POST isteği almalıdır:
 ```
 
 ### Google Sign In
-(Google Sign In entegrasyonu eklenecek)
+Backend servisiniz aşağıdaki formatta bir POST isteği almalıdır:
+
+```json
+{
+  "idToken": "string",
+  "user": {
+    "email": "string",
+    "name": "string"
+  }
+}
+```
+
+## Güvenlik Notları
+- `.env` dosyası ve `google-services.json` dosyası git reposuna eklenmemelidir
+- Bu dosyalar hassas bilgiler içerdiği için güvenli bir şekilde saklanmalıdır
+- Örnek değerler için `.env.example` dosyasını referans alın
 
 ## Not
 - Expo Go ile test edilemez, development build gereklidir

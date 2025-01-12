@@ -18,7 +18,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.habitzpro.habittracker",
       "config": {
-        "usesAppleSignIn": true
+        "usesAppleSignIn": true,
+        "googleSignIn": {
+          "reservedClientId": "GOOGLE_RESERVED_CLIENT_ID"
+        }
       }
     },
     "android": {
@@ -26,10 +29,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.habitzpro.habittracker"
+      "package": "com.habitzpro.habittracker",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
+    "scheme": "com.habitzpro.habittracker"
   }
 }
