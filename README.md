@@ -1,12 +1,13 @@
-# Apple Sign In Test - Expo
+# Apple ve Google Sign In - Expo Örnek Proje
 
-Bu proje, Expo React Native kullanarak Apple Sign In özelliğini test etmek için oluşturulmuştur.
+Bu proje, Expo React Native kullanarak Apple Sign In ve Google Sign In özelliklerini test etmek için oluşturulmuştur.
 
 ## Özellikler
 
 - Apple Sign In entegrasyonu
+- Google Sign In entegrasyonu
 - Token ve yetkilendirme kodu doğrulama
-- Kullanıcı adı ve email bilgilerini alma (kullanıcı izin verirse)
+- Kullanıcı bilgilerini alma (email, isim)
 
 ## Kurulum
 
@@ -20,20 +21,28 @@ npm install
    - Android için `package` değerlerini kendi uygulamanızın kimliği ile değiştirin
 
 3. `App.js` dosyasında backend URL'sini düzenleyin:
-   - `http://localhost:5040/Nexus/Api/User/AppleTokenValidate` adresini kendi backend servisinizin adresi ile değiştirin
+   - Apple Sign In için: `http://localhost:5040/Nexus/Api/User/AppleTokenValidate`
+   - Google Sign In için: `[GOOGLE_TOKEN_VALIDATE_ENDPOINT]`
+   adreslerini kendi backend servisinizin adresleri ile değiştirin
 
 4. Development build oluşturun:
 ```bash
 npx expo prebuild
 ```
 
-5. iOS için uygulamayı çalıştırın:
-```bash
-npx expo run:ios
-```
+5. Uygulamayı çalıştırın:
+   - iOS için:
+   ```bash
+   npx expo run:ios
+   ```
+   - Android için:
+   ```bash
+   npx expo run:android
+   ```
 
 ## Backend Entegrasyonu
 
+### Apple Sign In
 Backend servisiniz aşağıdaki formatta bir POST isteği almalıdır:
 
 ```json
@@ -44,7 +53,10 @@ Backend servisiniz aşağıdaki formatta bir POST isteği almalıdır:
 }
 ```
 
+### Google Sign In
+(Google Sign In entegrasyonu eklenecek)
+
 ## Not
-- Apple Sign In özelliği yalnızca iOS ve Android cihazlarda çalışır
 - Expo Go ile test edilemez, development build gereklidir
-- Backend servisinin Apple token doğrulama mantığını içermesi gerekir 
+- Backend servisinin token doğrulama mantığını içermesi gerekir
+- Her iki sign-in yöntemi de hem iOS hem de Android platformlarında kullanılabilir 

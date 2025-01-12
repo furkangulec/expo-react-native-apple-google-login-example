@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "apple-sign-in-test-expo",
-    "slug": "apple-sign-in-test-expo",
+    "name": "apple-google-sign-in-test-expo",
+    "slug": "apple-google-sign-in-test-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
